@@ -1,0 +1,67 @@
+/*
+ * Lab 4 Ex 2 - Servo Solenoid Chimes
+ * Lee Saynor
+ * DIGF 2B03 Physical Computing
+ * OCAD University
+ * Created on Mar 23, 2014
+ *
+ * A lot of frustration until I realized the AFMS SER1 pins don't work
+ *
+ * Based on:
+ * Adafruit Motor Shield
+ * http://learn.adafruit.com/adafruit-motor-shield/overview
+ *
+ */
+
+
+#include <AFMotor.h>
+#include <Servo.h> 
+ 
+AF_DCMotor motor(1, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
+ 
+Servo myServo;  // create servo object to control a servo 
+int pos = 20;    // variable to store the servo position 
+
+
+void setup() { 
+  Serial.begin(9600);
+  myServo.attach(9);                 // attaches the servo on pin 9 to the servo object 
+  Serial.println("Servo attached...");
+  delay(1000);
+  motor.setSpeed(255);               // set the speed to 200/255
+  Serial.println("Solenoid attached...");
+  delay(1000);
+} 
+ 
+ 
+void loop() { 
+  //SERVO
+  for(pos = 20; pos < 100; pos += 1) { // goes from 0 degrees to 180 degrees in steps of 1 degree 
+    myServo.write(pos);              // tell servo to go to position in variable 'pos' 
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+  delay(500);
+  Serial.print("tick");  
+  motor.run(FORWARD);      // turn it on going forward
+  delay(50);
+  Serial.print("tack");
+  motor.run(RELEASE);      // stopped
+  delay(500);
+  for(pos = 100; pos>=20; pos-=1) {    // goes from 180 degrees to 0 degrees                            
+    myServo.write(pos);              // tell servo to go to position in variable 'pos' 
+    delay(15);                       // waits 15ms for the servo to reach the position 
+  } 
+  delay(400);
+  for (int i = 0; i < 3; i++) {
+    Serial.print("tick");  
+    motor.run(FORWARD);      // turn it on going forward
+    delay(75);
+    Serial.print("tock");
+    motor.run(BACKWARD);     // the other way
+    delay(125);
+    Serial.print("tack");
+    motor.run(RELEASE);      // stopped
+    delay(100);
+  }
+  delay(400);
+}
